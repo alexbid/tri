@@ -19,7 +19,7 @@ from common import *
 class immo_rent(curve):
 
     def __init__(self, file_properties):
-        self.achat = properties(file_properties)
+        self.rent = properties(file_properties)
         self.return_over_charges = 0
         self.return_over_capital = 0
         self.mensualite = 0
