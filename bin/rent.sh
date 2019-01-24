@@ -1,5 +1,6 @@
 #!/bin/bash
 
-python ../lib/rent.py
+exe_dir=$(dirname "$0")
 
+python ${exe_dir}/../lib/rent.py
 

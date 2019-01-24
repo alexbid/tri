@@ -36,8 +36,8 @@ class immo_buy(curve):
         for iyear in range(1,  self.eco.infine/12):
             #f.addFlow(originDate + relativedelta(years=+iyear), -self.achat.valeur_locative * 0.8 * np.power(1 + self.eco.infla, iyear / 12.0))
             
-            print 'TUTU', originDate + relativedelta(years=+iyear)
-            raw_input()
+            # print 'TUTU', originDate + relativedelta(years=+iyear)
+            # raw_input()
             f.addFlow(originDate + relativedelta(years=+iyear), -self.getTF() * np.power(1 + self.eco.infla, iyear / 12.0))
 
         print f
