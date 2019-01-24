@@ -1,7 +1,9 @@
 
 
 import sys
+print "sys.path[0]:", sys.path[0]
 etc = sys.path[0].replace('/lib','/etc')
+etc = sys.path[0].replace('\\lib','\\etc')
 # sys.path.append(etc)
 
 import numpy as np
@@ -10,6 +12,7 @@ from scipy.optimize import fsolve
 import collections
 
 class flows:
+    # list of flows : date, flow, 
     def __init__(self):
         self.flowList = {}
         self.originDate = date.today()
@@ -37,7 +40,6 @@ class flows:
         return np.sum(np_buff)
 
     def getTRI_Pct(self): return fsolve(self.getTRI_NNN, 0.0)
-
 
 class curve:
     lineSpace = np.linspace(84,300, num=50)
@@ -91,7 +93,9 @@ class properties:
         self.read(tfile)
 
     def __str__(self):
-        return str('class properties')
+        tstring = ''
+        for keys, values in self.dico.items(): tstring = tstring + '\n' + keys + ': ' + str(values)
+        return tstring + '\n'
 
     def read(self, tfile):
         dico = {}
@@ -100,17 +104,27 @@ class properties:
                 lyne = lyne.replace('\n', '')
                 v = variable(lyne)
                 dico[v.field] = v.value
+        self.dico = dico                
 
         if self.type == 'rent.properties':
             if dico.has_key('loyer'): self.loyer = float(dico['loyer'])
+            if dico.has_key('cout_mensuel_charges'): self.cout_mensuel_charges = float(dico['cout_mensuel_charges'])
         elif self.type == 'buy.properties':
             if dico.has_key('prix'): self.prix = float(dico['prix'])
             if dico.has_key('maturite'): self.maturite = int(dico['maturite'])
             if dico.has_key('revente'): self.revente = int(dico['revente'])
+            if dico.has_key('valeur_locative'): self.valeur_locative = int(dico['valeur_locative'])
+            if dico.has_key('taxe_fonciere'): self.taxe_fonciere = int(dico['taxe_fonciere'])
+            if dico.has_key('cout_mensuel_charges'): self.cout_mensuel_charges = float(dico['cout_mensuel_charges'])
         elif self.type == 'eco.properties':   
             if dico.has_key('infla'): self.infla = float(dico['infla'])
             if dico.has_key('discount_rate'): self.discount_rate = float(dico['discount_rate'])
+            if dico.has_key('infine'): self.infine = int(dico['infine'])
+        elif self.type == 'credit.properties':   
+            if dico.has_key('mensualite'): self.mensualite = float(dico['mensualite'])
+            if dico.has_key('maturite_credit'): self.maturite_credit = float(dico['maturite_credit'])
 
 if __name__=='__main__':
     p = properties()
     p.read('rent.properties')
+    
