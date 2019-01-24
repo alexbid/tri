@@ -1,5 +1,6 @@
 #!/bin/bash
 
-python ../lib/buy.py
+exe_dir=$(dirname "$0")
 
+python ${exe_dir}/../lib/buy.py
 

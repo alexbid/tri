@@ -1,10 +1,8 @@
 
 
 import sys
-print "sys.path[0]:", sys.path[0]
-etc = sys.path[0].replace('/lib','/etc')
-etc = sys.path[0].replace('\\lib','\\etc')
-# sys.path.append(etc)
+lib = str(sys.path[0])
+etc = lib.replace('/lib','/etc').replace('\\lib','\\etc')
 
 import numpy as np
 from datetime import date
@@ -99,7 +97,9 @@ class properties:
 
     def read(self, tfile):
         dico = {}
+
         for lyne in open(etc + '/' + tfile):
+        # for lyne in open(tfile):
             if (lyne[0]!='#') and (lyne[0]!='\n') and ('=' in lyne):
                 lyne = lyne.replace('\n', '')
                 v = variable(lyne)
