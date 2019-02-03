@@ -31,7 +31,7 @@ class immo_rent(curve):
             f.addFlow(originDate + relativedelta(months=+imonth), -self.rent.cout_mensuel_charges * np.power(1 + self.eco.infla, imonth / 12.0))
             
         print f
-        print f.getTRI_NNN(0.02)
+        print "NPV:", f.getTRI_NNN(0.02)
 
     def get_tri_location(self, discount_rate, maturite, inflation, infine='', output='Pct'):
         if infine == '': infine = maturite

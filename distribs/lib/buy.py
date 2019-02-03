@@ -27,6 +27,7 @@ class immo_buy(curve):
 
     def generate_flows(self):
         f = flows()
+        f.addFlow(originDate, -self.achat.prix)
         for imonth in range(1, self.eco.infine):
             if imonth <= self.credit.maturite_credit:
                 f.addFlow(originDate + relativedelta(months=+imonth), -self.credit.mensualite)
@@ -40,8 +41,14 @@ class immo_buy(curve):
             # raw_input()
             f.addFlow(originDate + relativedelta(years=+iyear), -self.getTF() * np.power(1 + self.eco.infla, iyear / 12.0))
 
+        f.addFlow(originDate + relativedelta(months=+self.eco.infine), +self.achat.prix * np.power(1 + self.eco.infla, self.eco.infine / 12.0))
+
+        c = curve()
+
+
+        f.addFlow(originDate + relativedelta(months=+self.eco.infine), -c.getM_Residuel(self.achat.prix, self.credit.maturite_credit, self.eco.infine) * np.power(1 + self.eco.infla, self.eco.infine / 12.0))
         print f
-        print f.getTRI_NNN(0.02)
+        print "NPV:", f.getTRI_NNN(0.02)
 
     def getNotarialFees(self): return round(self.achat.prix * 7.2 / 100.0, 1)
 
