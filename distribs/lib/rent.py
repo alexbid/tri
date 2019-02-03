@@ -11,6 +11,7 @@ import operator
 from datetime import date
 import collections
 from dateutil.relativedelta import relativedelta
+from dateutil.rrule import rrule, MONTHLY
 np.set_printoptions(precision=5, suppress=True)
 originDate = date.today()
 
@@ -25,10 +26,17 @@ class immo_rent(curve):
         print self.rent
 
     def generate_flows(self):
-        f = flows()
-        for imonth in range(1, self.eco.infine):
-            f.addFlow(originDate + relativedelta(months=+imonth), -self.rent.loyer * np.power(1 + self.eco.infla, imonth / 12.0))
-            f.addFlow(originDate + relativedelta(months=+imonth), -self.rent.cout_mensuel_charges * np.power(1 + self.eco.infla, imonth / 12.0))
+
+    	f = flows()
+    	for date in rrule(MONTHLY, bymonthday=1, count=self.eco.infine):
+            date = date.date()
+            f.addFlow(date, -self.rent.loyer * np.power(1 + self.eco.infla, (date - originDate).days / 365.0))
+            f.addFlow(date, -self.rent.cout_mensuel_charges * np.power(1 + self.eco.infla, (date - originDate).days / 365.0))
+
+        # f = flows()
+        # for imonth in range(1, self.eco.infine):
+        #     f.addFlow(originDate + relativedelta(months=+imonth), -self.rent.loyer * np.power(1 + self.eco.infla, imonth / 12.0))
+        #     f.addFlow(originDate + relativedelta(months=+imonth), -self.rent.cout_mensuel_charges * np.power(1 + self.eco.infla, imonth / 12.0))
             
         print f
         print "NPV:", f.getTRI_NNN(0.02)
@@ -59,7 +67,7 @@ class immo_rent(curve):
 
         # print f
         if output == 'Pct': return f.getTRI_Pct()
-        else: return f.getTRI_NNN(discount_rate)
+        else: return f.getTRI_NNN(self.eco.discount_rate)
 
     def __str__(self):
         tstring = ''
@@ -69,26 +77,8 @@ class immo_rent(curve):
         return tstring
 
 if __name__=='__main__':
-
     if True:
         a = immo_rent('rent.properties', 'eco.properties')
         print a
-
-        # eco = properties('eco.properties')
-        # print "loyer %s, prix achat %s" % (location.loyer, achat.prix)
-        # i = immo(achat.prix, location.loyer)
-        # print 'taxe fonciere: %s' % (i.getTF())
-
-
-        # print 'mensualite %s' % c.getM(achat.prix + i.getNotarialFees(), achat.maturite)
-        # print 'prix achat AI %s, capital residuel %s apres %s mois' % (achat.prix + i.getNotarialFees(), c.getM_Residuel(achat.prix + i.getNotarialFees(), achat.maturite, achat.revente), achat.revente)
-        # print '\n'
-        # print "price %s, renting %s, infla %s, selling_back %s, discount_rate %s" % (achat.prix, location.loyer, eco.infla, achat.revente, eco.discount_rate)
-        # print 'get_max_return_over_capital:', i.get_max_return_over_capital()
-        # print 'get_tri_achat:', i.get_tri_achat(eco.discount_rate, achat.maturite, eco.infla, achat.revente, output=''), i.get_tri_achat(eco.discount_rate, achat.maturite, eco.infla, achat.revente, output='Pct')
-        # print 'get_tri_location:', i.get_tri_location(eco.discount_rate, achat.maturite, eco.infla, achat.revente, output='')
-        # print 'get_tri_location_with_placement:', i.get_tri_location_with_placement(eco.discount_rate, achat.maturite, eco.infla, achat.revente, output='')
-        # print 'get_tri_investment:', i.get_tri(eco.discount_rate, achat.maturite, eco.infla, achat.revente, output='')#, i.get_tri(discount_rate, tmaturite,infla, selling_back, output='Pct')
-
 
 

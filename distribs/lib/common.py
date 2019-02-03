@@ -19,7 +19,7 @@ class flows:
         self.flowList = collections.OrderedDict(sorted(self.flowList.items()))
         rtstring = ''
         for tdate, flow in self.flowList.iteritems():
-            rtstring = rtstring + '\n' + tdate.strftime('%m/%d/%Y') + ' =>' + ", ".join(str(x) for x in flow)
+            rtstring = rtstring + '\n' + tdate.strftime('%d/%m/%Y') + ' =>' + ", ".join(str(x) for x in flow)
         return str(rtstring)
 
     def addFlow(self, tdate, amount):
@@ -44,7 +44,9 @@ class curve:
 
     def getRate(self, maturity):
         xp = [84, 120, 144, 180, 240, 300]
-        fp = [0.75, 1, 1.15, 1.28, 1.45, 1.76]
+        # fp = [0.75, 1, 1.15, 1.28, 1.45, 1.76]
+        x =1
+        fp = [x, x, x, x, x, x]
         return np.interp(maturity, xp, fp)/100.0
 
     def getM(self, NNN, maturity, rate=False):
@@ -123,6 +125,7 @@ class properties:
         elif self.type == 'credit.properties':   
             if dico.has_key('mensualite'): self.mensualite = float(dico['mensualite'])
             if dico.has_key('maturite_credit'): self.maturite_credit = float(dico['maturite_credit'])
+            if dico.has_key('apport'): self.apport = float(dico['apport'])
 
 if __name__=='__main__':
     p = properties()

@@ -3,6 +3,11 @@ import sys
 etc = sys.path[0].replace('/lib','/etc')
 sys.path.append(etc)
 
+
+# from dateutil.rrule import rrule, MONTHLY
+# for date in rrule(MONTHLY, bymonthday=20, count=3):
+#     print date
+
 import matplotlib
 import numpy as np
 import matplotlib.pyplot as plt
@@ -10,6 +15,8 @@ import operator
 from datetime import date
 import collections
 from dateutil.relativedelta import relativedelta
+from dateutil.rrule import rrule, MONTHLY
+
 np.set_printoptions(precision=5, suppress=True)
 originDate = date.today()
 
@@ -21,34 +28,39 @@ class immo_buy(curve):
         self.eco = properties(eco_file_properties)
         self.credit = properties(credit_file_properties)
 
-        print self.achat
+        print "TOTO", self.achat.prix, self.getNotarialFees()
+        print "APPORT:", self.credit.apport
 
         self.generate_flows()
 
     def generate_flows(self):
-        f = flows()
-        f.addFlow(originDate, -self.achat.prix)
-        for imonth in range(1, self.eco.infine):
-            if imonth <= self.credit.maturite_credit:
-                f.addFlow(originDate + relativedelta(months=+imonth), -self.credit.mensualite)
-            f.addFlow(originDate + relativedelta(months=+imonth), -self.achat.cout_mensuel_charges * np.power(1 + self.eco.infla, imonth / 12.0))
 
-        # ajout de la TF
-        for iyear in range(1,  self.eco.infine/12):
-            #f.addFlow(originDate + relativedelta(years=+iyear), -self.achat.valeur_locative * 0.8 * np.power(1 + self.eco.infla, iyear / 12.0))
-            
-            # print 'TUTU', originDate + relativedelta(years=+iyear)
-            # raw_input()
-            f.addFlow(originDate + relativedelta(years=+iyear), -self.getTF() * np.power(1 + self.eco.infla, iyear / 12.0))
-
-        f.addFlow(originDate + relativedelta(months=+self.eco.infine), +self.achat.prix * np.power(1 + self.eco.infla, self.eco.infine / 12.0))
+        end_credit = originDate + relativedelta(months=+int(self.credit.maturite_credit))
 
         c = curve()
+        mensualite = c.getM(self.achat.prix - self.credit.apport, self.credit.maturite_credit, c.getRate(self.credit.maturite_credit))
 
+        f = flows()
+        f.addFlow(originDate, -self.achat.prix)
+        f.addFlow(originDate, -self.getNotarialFees())
+        f.addFlow(originDate, +self.achat.prix - self.credit.apport)
 
-        f.addFlow(originDate + relativedelta(months=+self.eco.infine), -c.getM_Residuel(self.achat.prix, self.credit.maturite_credit, self.eco.infine) * np.power(1 + self.eco.infla, self.eco.infine / 12.0))
+        for date in rrule(MONTHLY, bymonthday=1, count=self.eco.infine):
+            date = date.date()
+            if date <= end_credit:
+                f.addFlow(date, -mensualite)
+            f.addFlow(date, -self.achat.cout_mensuel_charges * np.power(1 + self.eco.infla, (date - originDate).days / 365.0))
+            # ajout de la TF
+            if date.month == 11:
+                f.addFlow(date, -self.getTF() * np.power(1 + self.eco.infla, (date - originDate).days / 365.0))
+
+        # prix de revente
+        f.addFlow(date, +self.achat.prix * np.power(1 + self.eco.infla, (date - originDate).days / 365.0))
+        # remboursement residuel credit
+        f.addFlow(date, -c.getM_Residuel(self.achat.prix - self.credit.apport, self.credit.maturite_credit, self.eco.infine) * np.power(1 + self.eco.infla, (date - originDate).days / 365.0))
+        
         print f
-        print "NPV:", f.getTRI_NNN(0.02)
+        print "NPV:", f.getTRI_NNN(self.eco.discount_rate)
 
     def getNotarialFees(self): return round(self.achat.prix * 7.2 / 100.0, 1)
 
