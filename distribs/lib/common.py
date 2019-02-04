@@ -54,6 +54,7 @@ class curve:
         return np.power(X, maturity) * NNN * (1 - X) / (1 - np.power(X,maturity))
 
     def getM_Residuel(self, NNN, maturity, rest_maturity, rate=False):
+            if rate==False: rate = self.getRate(maturity)
             if rest_maturity <= 0: return NNN
             if rest_maturity >= maturity: return 0.0
             mensualite = self.getM(NNN, maturity, rate)
