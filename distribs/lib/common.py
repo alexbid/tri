@@ -43,10 +43,9 @@ class curve:
     lineSpace = np.linspace(84,300, num=50)
 
     def getRate(self, maturity):
-        xp = [84, 120, 144, 180, 240, 300]
-        # fp = [0.75, 1, 1.15, 1.28, 1.45, 1.76]
-        x =1
-        fp = [x, x, x, x, x, x]
+        credit = properties('credit.properties')
+        xp = credit.curve.keys()
+        fp = credit.curve.values()
         return np.interp(maturity, xp, fp)/100.0
 
     def getM(self, NNN, maturity, rate=False):
@@ -97,6 +96,13 @@ class properties:
         for keys, values in self.dico.items(): tstring = tstring + '\n' + keys + ': ' + str(values)
         return tstring + '\n'
 
+    def todict(self,strDico):
+        dico = {}
+        for item in strDico.replace('{','').replace('}','').split(','):
+            buff = item.split(':')
+            dico[int(buff[0].strip())] = float(buff[1].strip())
+        return dico
+
     def read(self, tfile):
         dico = {}
 
@@ -126,6 +132,7 @@ class properties:
             if dico.has_key('mensualite'): self.mensualite = float(dico['mensualite'])
             if dico.has_key('maturite_credit'): self.maturite_credit = float(dico['maturite_credit'])
             if dico.has_key('apport'): self.apport = float(dico['apport'])
+            if dico.has_key('curve'): self.curve = self.todict(dico['curve'])
 
 if __name__=='__main__':
     p = properties()

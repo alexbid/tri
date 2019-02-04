@@ -175,7 +175,6 @@ class immo_buy(curve):
 
     def __str__(self):
         tstring = 'buy_price: ' + str(self.achat.prix)
-        #tstring = tstring + '\nbuy_price_all_in: ' + str(self.buy_price_allin)
         tstring = tstring + '\ntaxe_fonciere: ' + str(self.getTF())
         return tstring
 
