@@ -1,12 +1,10 @@
 #!/bin/bash
 
-ROOT=/Users/alex/tri/distribs/bin
+SCRIPT=`realpath $0`
+SCRIPTPATH=`dirname $SCRIPT`
 
 SELL=12
+sed -i".bak" "s/infine=.*/infine=${SELL}/g" ${SCRIPTPATH}/../../distribs/etc/eco.properties
 
-sed -i".bak" "s/infine=.*/infine=${SELL}/g" ${ROOT}/../etc/eco.properties
-
-${ROOT}/rent.sh
-
-
- 
+${SCRIPTPATH}/../../distribs/bin/rent.sh
+#
