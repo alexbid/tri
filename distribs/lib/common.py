@@ -97,7 +97,7 @@ class properties:
         self.read(tfile)
 
     def __str__(self):
-        tstring = ''
+        tstring = str(self.type)
         for keys, values in self.dico.items(): tstring = tstring + '\n' + keys + ': ' + str(values)
         return tstring + '\n'
 
@@ -138,6 +138,15 @@ class properties:
             if dico.has_key('curve'): self.curve = self.todict(dico['curve'])
 
 if __name__=='__main__':
-    p = properties('rent.properties')
-    print p
+    b = properties('buy.properties')
+    print b
+
+    c = properties('credit.properties')
+    print c
+
+    e = properties('eco.properties')
+    print e
+    
+    r = properties('rent.properties')
+    print r
     
