@@ -52,6 +52,7 @@ class curve:
 
     def getM(self, NNN, maturity, rate=False):
         if rate == False: rate = self.getRate(maturity)
+        if rate <= 0.00000001: return NNN / maturity
         X = np.power(1 + rate, 1 / 12.0)
         return np.power(X, maturity) * NNN * (1 - X) / (1 - np.power(X,maturity))
 
