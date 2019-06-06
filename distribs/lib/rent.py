@@ -22,8 +22,11 @@ class immo_rent(curve):
     def __init__(self, file_properties, eco_file_properties):
         self.rent = properties(file_properties)
         self.eco = properties(eco_file_properties)
-        self.generate_flows()
+        
         print self.rent
+        print self.eco
+        
+        self.generate_flows()
 
     def generate_flows(self):
 
