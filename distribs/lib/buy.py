@@ -3,7 +3,6 @@ import sys
 etc = sys.path[0].replace('/lib','/etc')
 sys.path.append(etc)
 
-
 # from dateutil.rrule import rrule, MONTHLY
 # for date in rrule(MONTHLY, bymonthday=20, count=3):
 #     print date
@@ -28,9 +27,10 @@ class immo_buy(curve):
         self.eco = properties(eco_file_properties)
         self.credit = properties(credit_file_properties)
 
-        print "TOTO", self.achat.prix, self.getNotarialFees()
-        print "APPORT:", self.credit.apport
-
+        print self.achat
+        print self.eco
+        print self.credit
+        
         self.generate_flows()
 
     def generate_flows(self):
@@ -71,7 +71,6 @@ class immo_buy(curve):
             return self.achat.valeur_locative * 0.08
 
     def getTF(self):
-        #print "self.get_valeur_locative():" , self.get_valeur_locative() 
         if self.achat.taxe_fonciere != 0: return self.achat.taxe_fonciere 
         if self.get_valeur_locative() * 0.95 < 500: return 500
         elif self.get_valeur_locative() * 0.95 > 2500: return 2500
@@ -99,7 +98,7 @@ class immo_buy(curve):
         stats ={}
         for item in x:
             stats[item] = round(i.get_return_over_capital(item),3)
-        #print 'alternative si doublons:', [key for key, valinstats.iteritems() if val == max(stats.values())]
+        # 'alternative si doublons:', [key for key, valinstats.iteritems() if val == max(stats.values())]
         return max(stats.iteritems(), key=operator.itemgetter(1))
 
     def get_tri(self, discount_rate, maturite, inflation, infine='', output='Pct'):
@@ -118,7 +117,7 @@ class immo_buy(curve):
         f.addFlow(originDate + relativedelta(months=+infine), self.achat.prix * np.power(1 + inflation, infine / 12.0))
         # valeur residuelle credit
         f.addFlow(originDate + relativedelta(months=+infine), -c.getM_Residuel(self.buy_price_allin, maturite, infine) * np.power(1 + inflation, infine / 12.0))
-        # print f
+
         if output == 'Pct': return f.getTRI_Pct()
         else: return f.getTRI_NNN(discount_rate)
 
@@ -131,7 +130,6 @@ class immo_buy(curve):
             f.addFlow(originDate + relativedelta(months=+imonth), -self.valeur_locative * np.power(1 + inflation, imonth / 12.0))
             f.addFlow(originDate + relativedelta(months=+imonth), -self.cout_mensuel_charges * 0.25 * np.power(1 + inflation, imonth / 12.0))
 
-        # print f
         if output == 'Pct': return f.getTRI_Pct()
         else: return f.getTRI_NNN(discount_rate)
 
@@ -146,13 +144,11 @@ class immo_buy(curve):
             f.addFlow(originDate + relativedelta(months=+imonth), -self.valeur_locative * np.power(1 + inflation, imonth / 12.0))
             f.addFlow(originDate + relativedelta(months=+imonth), -self.cout_mensuel_charges * 0.25 * np.power(1 + inflation, imonth / 12.0))
 
-        # print f
         if output == 'Pct': return f.getTRI_Pct()
         else: return f.getTRI_NNN(discount_rate)
 
     def get_tri_achat(self, discount_rate, maturite, inflation, infine='', output='Pct'):
         if infine == '': infine = int(maturite)
-        # print 'infine:', infine, type(infine)
         f = flows()
         for imonth in range(1, infine):
             if imonth <= maturite:
@@ -169,7 +165,7 @@ class immo_buy(curve):
         f.addFlow(originDate + relativedelta(months=+infine), self.achat.prix * np.power(1 + inflation, infine / 12.0))
         # valeur residuelle credit
         f.addFlow(originDate + relativedelta(months=+infine), -c.getM_Residuel(self.buy_price_allin, maturite, infine) * np.power(1 + inflation, infine / 12.0))
-        # print f
+
         if output == 'Pct': return f.getTRI_Pct()
         else: return f.getTRI_NNN(discount_rate)
 
@@ -180,4 +176,3 @@ class immo_buy(curve):
 
 if __name__=='__main__':
     a = immo_buy('buy.properties', 'eco.properties', 'credit.properties')
-    print a
