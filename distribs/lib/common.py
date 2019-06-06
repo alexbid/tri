@@ -60,6 +60,7 @@ class curve:
             if rate==False: 
                 #print 'rate:', self.getRate(maturity)
                 rate = self.getRate(maturity)
+                if rate <= 0.000000001: rate = 0.0
             if rest_maturity <= 0: return NNN
             if rest_maturity >= maturity: return 0.0
             mensualite = self.getM(NNN, maturity, rate)
