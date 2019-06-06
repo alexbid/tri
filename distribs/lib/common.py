@@ -1,6 +1,8 @@
 
 
 import sys
+import os
+
 lib = str(sys.path[0])
 etc = lib.replace('/lib','/etc').replace('\\lib','\\etc')
 
@@ -108,9 +110,7 @@ class properties:
 
     def read(self, tfile):
         dico = {}
-
-        for lyne in open(etc + '/' + tfile):
-        # for lyne in open(tfile):
+        for lyne in open(os.path.join(etc, tfile)):
             if (lyne[0]!='#') and (lyne[0]!='\n') and ('=' in lyne):
                 lyne = lyne.replace('\n', '')
                 v = variable(lyne)
