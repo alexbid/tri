@@ -57,7 +57,7 @@ class curve:
 
     def getM_Residuel(self, NNN, maturity, rest_maturity, rate=False):
             if rate==False: 
-                print 'rate:', self.getRate(maturity)
+                #print 'rate:', self.getRate(maturity)
                 rate = self.getRate(maturity)
             if rest_maturity <= 0: return NNN
             if rest_maturity >= maturity: return 0.0
