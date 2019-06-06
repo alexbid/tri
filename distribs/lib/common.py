@@ -138,6 +138,6 @@ class properties:
             if dico.has_key('curve'): self.curve = self.todict(dico['curve'])
 
 if __name__=='__main__':
-    p = properties()
-    p.read('rent.properties')
+    p = properties('rent.properties')
+    print p
     
